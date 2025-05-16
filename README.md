@@ -12,3 +12,8 @@ postgres=# CREATE DATABASE "gestionRestaurantes";
 generr las migraciones  npm run  migration:generate
 
 ejeuctar migraciones npm run migration:run
+
+
+// borrar todo
+npm run schema:drop
+
