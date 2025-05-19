@@ -24,10 +24,18 @@ CREATE DATABASE "gestionRestaurantes";
 \q
 ```
 
+---
+## 2. Instalar paquetes necesarios
 
+instalaer dependencias:
+
+```bash
+npm i
+npm run build
+```
 ---
 
-## 2. Generar migraciones
+## 3. Generar migraciones
 
 Para generar una nueva migración basada en los cambios de tus entidades:
 
@@ -36,7 +44,7 @@ npm run migration:generate
 ```
 ---
 
-## 3. Ejecutar migraciones
+## 4. Ejecutar migraciones
 
 Para aplicar todas las migraciones pendientes a la base de datos:
 
@@ -47,7 +55,7 @@ npm run migration:run
 
 ---
 
-## 4. Borrar todo el esquema (opcional, solo para desarrollo)
+## 5. Borrar todo el esquema (opcional, solo para desarrollo)
 
 Si necesitas **eliminar todas las tablas y datos** de la base de datos (útil para empezar de cero):
 
@@ -55,7 +63,8 @@ Si necesitas **eliminar todas las tablas y datos** de la base de datos (útil pa
 npm run schema:drop
 ```
 
-## 5. Ejecutar la app
+
+## 6. Ejecutar la app
 
 Para ejecutar la app solamente necesitaras correr el siguiente comando:
 
