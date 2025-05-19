@@ -1,9 +1,16 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
-import { DishesService } from './dishes.service';
-import { CreateDishDto } from './dto/create-dish.dto';
-import { UpdateDishDto } from './dto/update-dish.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+} from "@nestjs/common";
+import { DishesService } from "./dishes.service";
+import { CreateDishDto } from "./dto/create-dish.dto";
+import { UpdateDishDto } from "./dto/update-dish.dto";
+import { Delete, Param, HttpCode } from '@nestjs/common';
 
-@Controller('dishes')
+@Controller("dishes")
 export class DishesController {
   constructor(private readonly dishesService: DishesService) {}
 
@@ -17,18 +24,19 @@ export class DishesController {
     return this.dishesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.dishesService.findOne(+id);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateDishDto: UpdateDishDto) {
+  @Put(":id")
+  update(@Param("id") id: string, @Body() updateDishDto: UpdateDishDto) {
     return this.dishesService.update(+id, updateDishDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.dishesService.delete(+id);
+  @Delete(":id")
+  @HttpCode(204)
+  async remove(@Param("id") id: string): Promise<void> {
+    await this.dishesService.delete(+id);
   }
 }

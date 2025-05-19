@@ -1,0 +1,1464 @@
+{
+	"info": {
+		"_postman_id": "6ae8e729-1a02-4b90-9cea-4f9140c0f90a",
+		"name": "MISW4403_PARCIAL_PRACTICO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43784205",
+		"_collection_link": "https://red-trinity-751297.postman.co/workspace/MISW4403_202512_E03-Dise%25C3%25B1oApis~07a1178e-31a0-4ec4-a3c4-45ba557834fd/collection/43784205-6ae8e729-1a02-4b90-9cea-4f9140c0f90a?action=share&source=collection_link&creator=43784205"
+	},
+	"item": [
+		{
+			"name": "Restaurantes",
+			"item": [
+				{
+					"name": "Crear un restaurante válido.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"RESTAURANT_ID\", jsonData.id);",
+									"",
+									"pm.test(\"Restaurant created has correct fields\", function () {",
+									"  pm.expect(jsonData).to.have.property(\"id\");",
+									"  pm.expect(jsonData.name).to.eql(\"La Trattoria\");",
+									"  pm.expect(jsonData.cuisineType).to.eql(\"Italiana\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"La Trattoria\",\n  \"address\": \"Calle 123 #45-67\",\n  \"cuisineType\": \"Italiana\",\n  \"website\": \"https://latrattoria.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear un restaurante inválido.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"\", \n  \"address\": \"\",\n  \"cuisineType\": \"Francesa\",\n  \"website\": \"not-a-url\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todos los restaurantes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    pm.expect(jsonData).to.be.an(\"array\");",
+									"});",
+									"",
+									"if (jsonData.length > 0) {",
+									"    pm.test(\"Each restaurant has required keys\", function () {",
+									"        jsonData.forEach(item => {",
+									"            pm.expect(item).to.have.all.keys(\"id\", \"name\", \"address\", \"cuisineType\", \"website\", \"dishes\");",
+									"        });",
+									"    });",
+									"",
+									"    pm.test(\"Dishes is array for each restaurant\", function () {",
+									"        jsonData.forEach(item => {",
+									"            pm.expect(item.dishes).to.be.an(\"array\");",
+									"        });",
+									"    });",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener un restaurante por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response is an object\", function () {",
+									"    pm.expect(jsonData).to.be.an(\"object\");",
+									"});",
+									"",
+									"pm.test(\"Restaurant has required keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"id\", \"name\", \"address\", \"cuisineType\", \"website\", \"dishes\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener un restaurante por un ID que no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/999999",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar un restaurante",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Restaurant has required keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"id\", \"name\", \"address\", \"cuisineType\", \"website\", \"dishes\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"La Trattoria Renovada\",\n  \"address\": \"Calle 456 #89-10\",\n  \"cuisineType\": \"Italiana\",\n  \"website\": \"https://latrattoriarenovada.com\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar un restaurante con un ID que no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"No Existe\",\n  \"address\": \"Calle Falsa 123\",\n  \"cuisineType\": \"Italiana\",\n  \"website\": \"https://noexiste.com\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/999999",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar un restaurante por su ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.expect([204]).to.include(pm.response.code);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar un restaurante con un ID que no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/999999",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Platos",
+			"item": [
+				{
+					"name": "Crear un plato válido.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"DISH_ID\", jsonData.id);",
+									"",
+									"pm.test(\"Dish created has correct fields\", function () {",
+									"  pm.expect(jsonData).to.have.property(\"id\");",
+									"  pm.expect(jsonData.name).to.eql(\"Lasagna\");",
+									"  pm.expect(jsonData.category).to.eql(\"plato fuerte\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Lasagna\",\n  \"description\": \"Pasta al horno con salsa boloñesa y queso\",\n  \"price\": 32000,\n  \"category\": \"plato fuerte\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/dishes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear un plato inválido.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"\",\n  \"description\": \"\",\n  \"price\": -100,\n  \"category\": \"snack\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/dishes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todos los platos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    pm.expect(jsonData).to.be.an(\"array\");",
+									"});",
+									"",
+									"if (jsonData.length > 0) {",
+									"    pm.test(\"Each dish has required keys\", function () {",
+									"        jsonData.forEach(item => {",
+									"            pm.expect(item).to.have.all.keys(\"id\", \"name\", \"description\", \"price\", \"category\");",
+									"        });",
+									"    });",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/dishes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener un plato por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response is an object\", function () {",
+									"    pm.expect(jsonData).to.be.an(\"object\");",
+									"});",
+									"",
+									"pm.test(\"Dish has required keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"id\", \"name\", \"description\", \"price\", \"category\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/dishes/{{DISH_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dishes",
+								"{{DISH_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener un plato por un ID que no existe.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/dishes/999999",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dishes",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar un plato",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Dish has required keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"id\", \"name\", \"description\", \"price\", \"category\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Lasagna Vegetariana\",\n  \"description\": \"Pasta al horno con verduras y queso\",\n  \"price\": 35000,\n  \"category\": \"plato fuerte\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/dishes/{{DISH_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dishes",
+								"{{DISH_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar un plato con un ID que no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"No Existe\",\n  \"description\": \"No existe\",\n  \"price\": 1000,\n  \"category\": \"plato fuerte\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/dishes/999999",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dishes",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar un plato por su ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 204\", function () {",
+									"    pm.expect([204]).to.include(pm.response.code);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/dishes/{{DISH_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dishes",
+								"{{DISH_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar un plato con un ID que no existe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/dishes/999999",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dishes",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Restaurantes-Platos",
+			"item": [
+				{
+					"name": "Asociar un plato a un restaurante.",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}/dishes/{{DISH_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}",
+								"dishes",
+								"{{DISH_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Asociar un plato que no existe a un restaurante.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}/dishes/999",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}",
+								"dishes",
+								"999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todos los platos que están en un restaurante",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    pm.expect(jsonData).to.be.an(\"array\");",
+									"});",
+									"",
+									"if (jsonData.length > 0) {",
+									"    pm.test(\"Each dish has required keys\", function () {",
+									"        jsonData.forEach(item => {",
+									"            pm.expect(item).to.have.all.keys(\"id\", \"name\", \"description\", \"price\", \"category\");",
+									"        });",
+									"    });",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// 1. Crear restaurante nuevo",
+									"pm.sendRequest({",
+									"    url: pm.collectionVariables.get(\"BASE_URL\") + \"/restaurants\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({",
+									"            name: \"Restaurante PreRequest\",",
+									"            address: \"Calle 123\",",
+									"            cuisineType: \"Italiana\",",
+									"            website: \"https://restaurantepre.com\"",
+									"        })",
+									"    }",
+									"}, function (err, res) {",
+									"    if (!err && res.code === 201) {",
+									"        var restaurantId = res.json().id;",
+									"        pm.collectionVariables.set(\"RESTAURANT_ID\", restaurantId);",
+									"",
+									"        // 2. Crear plato nuevo",
+									"        pm.sendRequest({",
+									"            url: pm.collectionVariables.get(\"BASE_URL\") + \"/dishes\",",
+									"            method: \"POST\",",
+									"            header: { \"Content-Type\": \"application/json\" },",
+									"            body: {",
+									"                mode: \"raw\",",
+									"                raw: JSON.stringify({",
+									"                    name: \"Plato PreRequest\",",
+									"                    description: \"Plato de prueba\",",
+									"                    price: 15000,",
+									"                    category: \"plato fuerte\"",
+									"                })",
+									"            }",
+									"        }, function (err2, res2) {",
+									"            if (!err2 && res2.code === 201) {",
+									"                var dishId = res2.json().id;",
+									"                pm.collectionVariables.set(\"DISH_ID\", dishId);",
+									"",
+									"                // 3. Asociar plato al restaurante",
+									"                pm.sendRequest({",
+									"                    url: pm.collectionVariables.get(\"BASE_URL\") + \"/restaurants/\" + restaurantId + \"/dishes/\" + dishId,",
+									"                    method: \"POST\"",
+									"                }, function (err3, res3) {",
+									"                    // Asociación lista, puedes ejecutar tu request principal",
+									"                });",
+									"            }",
+									"        });",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}/dishes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}",
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener un plato asociado a un restaurante",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response is an object\", function () {",
+									"    pm.expect(jsonData).to.be.an(\"object\");",
+									"});",
+									"",
+									"pm.test(\"Dish has required keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"id\", \"name\", \"description\", \"price\", \"category\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// 1. Crear restaurante nuevo",
+									"pm.sendRequest({",
+									"    url: pm.collectionVariables.get(\"BASE_URL\") + \"/restaurants\",",
+									"    method: \"POST\",",
+									"    header: { \"Content-Type\": \"application/json\" },",
+									"    body: {",
+									"        mode: \"raw\",",
+									"        raw: JSON.stringify({",
+									"            name: \"Restaurante PreRequest\",",
+									"            address: \"Calle 123\",",
+									"            cuisineType: \"Italiana\",",
+									"            website: \"https://restaurantepre.com\"",
+									"        })",
+									"    }",
+									"}, function (err, res) {",
+									"    if (!err && res.code === 201) {",
+									"        var restaurantId = res.json().id;",
+									"        pm.collectionVariables.set(\"RESTAURANT_ID\", restaurantId);",
+									"",
+									"        // 2. Crear plato nuevo",
+									"        pm.sendRequest({",
+									"            url: pm.collectionVariables.get(\"BASE_URL\") + \"/dishes\",",
+									"            method: \"POST\",",
+									"            header: { \"Content-Type\": \"application/json\" },",
+									"            body: {",
+									"                mode: \"raw\",",
+									"                raw: JSON.stringify({",
+									"                    name: \"Plato PreRequest\",",
+									"                    description: \"Plato de prueba\",",
+									"                    price: 15000,",
+									"                    category: \"plato fuerte\"",
+									"                })",
+									"            }",
+									"        }, function (err2, res2) {",
+									"            if (!err2 && res2.code === 201) {",
+									"                var dishId = res2.json().id;",
+									"                pm.collectionVariables.set(\"DISH_ID\", dishId);",
+									"",
+									"                // 3. Asociar plato al restaurante",
+									"                pm.sendRequest({",
+									"                    url: pm.collectionVariables.get(\"BASE_URL\") + \"/restaurants/\" + restaurantId + \"/dishes/\" + dishId,",
+									"                    method: \"POST\"",
+									"                }, function (err3, res3) {",
+									"                    // Asociación lista, puedes ejecutar tu request principal",
+									"                });",
+									"            }",
+									"        });",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}/dishes/{{DISH_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}",
+								"dishes",
+								"{{DISH_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener un plato que no esté asociado a un restaurante",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}/dishes/999999",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}",
+								"dishes",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar los platos asociados a un restaurante",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Restaurant has required keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"id\", \"name\", \"address\", \"cuisineType\", \"website\", \"dishes\");",
+									"});",
+									"",
+									"pm.test(\"Dishes is array for restaurant\", function () {",
+									"    pm.expect(jsonData.dishes).to.be.an(\"array\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{{DISH_ID}}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}/dishes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}",
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar los platos asociados a un restaurante, con un plato inexistente.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response is an object\", function () {",
+									"    pm.expect(jsonData).to.be.an(\"object\");",
+									"});",
+									"",
+									"pm.test(\"Restaurant has required keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"id\", \"name\", \"address\", \"cuisineType\", \"website\", \"dishes\");",
+									"});",
+									"",
+									"pm.test(\"Dishes is array\", function () {",
+									"    pm.expect(jsonData.dishes).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"Dishes only contains the existing dish\", function () {",
+									"    const dishIds = jsonData.dishes.map(d => d.id);",
+									"    pm.expect(dishIds).to.include(parseInt(pm.collectionVariables.get(\"DISH_ID\")));",
+									"    pm.expect(dishIds).to.not.include(999999);",
+									"    pm.expect(dishIds.length).to.eql(1);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{{DISH_ID}}, 999999]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}/dishes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}",
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar un plato previamente asociado a un restaurante.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response body is empty\", function () {",
+									"    pm.expect(pm.response.text()).to.eql(\"\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"    pm.sendRequest({",
+									"        url: pm.collectionVariables.get(\"BASE_URL\") + \"/restaurants\",",
+									"        method: \"POST\",",
+									"        header: { \"Content-Type\": \"application/json\" },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify({",
+									"                name: \"Restaurante para eliminar\",",
+									"                address: \"Calle 123\",",
+									"                cuisineType: \"Italiana\",",
+									"                website: \"https://restauranteprueba.com\"",
+									"            })",
+									"        }",
+									"    }, function (err, res) {",
+									"        if (!err && res.code === 201) {",
+									"            var id = res.json().id;",
+									"            pm.collectionVariables.set(\"RESTAURANT_ID\", id);",
+									"",
+									"            // 2. Crear plato",
+									"            pm.sendRequest({",
+									"                url: pm.collectionVariables.get(\"BASE_URL\") + \"/dishes\",",
+									"                method: \"POST\",",
+									"                header: { \"Content-Type\": \"application/json\" },",
+									"                body: {",
+									"                    mode: \"raw\",",
+									"                    raw: JSON.stringify({",
+									"                        name: \"Plato para eliminar\",",
+									"                        description: \"Plato de prueba\",",
+									"                        price: 15000,",
+									"                        category: \"plato fuerte\"",
+									"                    })",
+									"                }",
+									"            }, function (err2, res2) {",
+									"                if (!err2 && res2.code === 201) {",
+									"                    var dishId = res2.json().id;",
+									"                    pm.collectionVariables.set(\"DISH_ID\", dishId);",
+									"",
+									"                    // 3. Asociar plato al restaurante",
+									"                    pm.sendRequest({",
+									"                        url: pm.collectionVariables.get(\"BASE_URL\") + \"/restaurants/\" + id + \"/dishes/\" + dishId,",
+									"                        method: \"POST\"",
+									"                    }, function (err3, res3) {",
+									"                        // Ya está asociado, listo para DELETE",
+									"                    });",
+									"                }",
+									"            });",
+									"        }",
+									"    });",
+									"",
+									"    // Solo falta el plato",
+									"    pm.sendRequest({",
+									"        url: pm.collectionVariables.get(\"BASE_URL\") + \"/dishes\",",
+									"        method: \"POST\",",
+									"        header: { \"Content-Type\": \"application/json\" },",
+									"        body: {",
+									"            mode: \"raw\",",
+									"            raw: JSON.stringify({",
+									"                name: \"Plato para eliminar\",",
+									"                description: \"Plato de prueba\",",
+									"                price: 15000,",
+									"                category: \"plato fuerte\"",
+									"            })",
+									"        }",
+									"    }, function (err2, res2) {",
+									"        if (!err2 && res2.code === 201) {",
+									"            var dishId = res2.json().id;",
+									"            pm.collectionVariables.set(\"DISH_ID\", dishId);",
+									"",
+									"            // Asociar al restaurante ya existente",
+									"            pm.sendRequest({",
+									"                url: pm.collectionVariables.get(\"BASE_URL\") + \"/restaurants/\" + pm.collectionVariables.get(\"RESTAURANT_ID\") + \"/dishes/\" + dishId,",
+									"                method: \"POST\"",
+									"            }, function (err3, res3) {",
+									"                // Ya está asociado, listo para DELETE",
+									"            });",
+									"        }",
+									"    });",
+									"",
+									"    // Ambos existen, solo asegúrate de la asociación",
+									"    pm.sendRequest({",
+									"        url: pm.collectionVariables.get(\"BASE_URL\") + \"/restaurants/\" + pm.collectionVariables.get(\"RESTAURANT_ID\") + \"/dishes/\" + pm.collectionVariables.get(\"DISH_ID\"),",
+									"        method: \"POST\"",
+									"    }, function (err3, res3) {",
+									"        // Ya está asociado, listo para DELETE",
+									"    });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}/dishes/{{DISH_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}",
+								"dishes",
+								"{{DISH_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar un plato que no estaba previamente asociado a un restaurante",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"const jsonData = pm.response.json();",
+									"pm.test(\"Response has required error keys\", function () {",
+									"    pm.expect(jsonData).to.have.all.keys(\"message\", \"error\", \"statusCode\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/restaurants/{{RESTAURANT_ID}}/dishes/999999",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"restaurants",
+								"{{RESTAURANT_ID}}",
+								"dishes",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "RESTAURANT_ID",
+			"value": ""
+		},
+		{
+			"key": "DISH_ID",
+			"value": ""
+		}
+	]
+}

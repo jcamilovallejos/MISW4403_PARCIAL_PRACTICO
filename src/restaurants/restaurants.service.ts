@@ -163,7 +163,7 @@ export class RestaurantsService {
   async deleteDishFromRestaurant(
     restaurantId: number,
     dishId: number
-  ): Promise<Restaurant> {
+  ): Promise<void> {
     const restaurant = await this.restaurantRepository.findOne({
       where: { id: restaurantId },
       relations: ["dishes"],
@@ -171,7 +171,15 @@ export class RestaurantsService {
     if (!restaurant) {
       throw new NotFoundException("Restaurante no encontrado");
     }
+
+    const dishExists = restaurant.dishes.some((d) => d.id === dishId);
+    if (!dishExists) {
+      throw new NotFoundException(
+        `Plato con id ${dishId} no está asociado a este restaurante`
+      );
+    }
+
     restaurant.dishes = restaurant.dishes.filter((d) => d.id !== dishId);
-    return this.restaurantRepository.save(restaurant);
+    await this.restaurantRepository.save(restaurant);
   }
 }
